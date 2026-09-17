@@ -1,0 +1,28 @@
+# Ativado por SPRING_PROFILES_ACTIVE=docker (definido no docker-compose.yml).
+# O datasource vem das variáveis de ambiente SPRING_DATASOURCE_* do compose.
+
+spring:
+  devtools:
+    restart:
+      enabled: true
+      # Bind mount de host -> container não propaga eventos inotify de forma
+      # confiável (principalmente no Docker Desktop). Polling resolve isso.
+      poll-interval: 2s
+      quiet-period: 1s
+      additional-paths: /workspace/src/main/java
+    livereload:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
