@@ -1,9 +1,16 @@
 package com.andre.DesafioStellantis.domain;
 
+import com.andre.DesafioStellantis.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -12,7 +19,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +27,15 @@ public class User {
 
     @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
+
+    @Column(name = "password", nullable = false, length = 64)
+    private String hashPassword;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @Column(nullable = false, length = 100)
     private String position;
@@ -40,5 +56,21 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = Instant.now();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return hashPassword;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }
