@@ -2,7 +2,6 @@ package com.andre.DesafioStellantis.domain;
 
 import com.andre.DesafioStellantis.enums.FuelType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
