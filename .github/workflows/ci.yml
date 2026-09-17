@@ -1,0 +1,89 @@
+name: CI - Backend
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - 'refactor/**'
+      - 'hotfix/**'
+      - 'chore/**'
+      - 'docs/**'
+      - 'test/**'
+      - 'release/**'
+
+  pull_request:
+    branches:
+      - main
+      - production
+    types: [opened, synchronize, reopened, ready_for_review]
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: Testes + Cobertura JaCoCo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Garantir permissão do Maven Wrapper
+        working-directory: backend
+        run: chmod +x mvnw
+
+      - name: Rodar testes e gerar relatório de cobertura
+        working-directory: backend
+        run: ./mvnw -B verify
+
+      # ---------- ARTEFATO: a pasta de cobertura do JaCoCo ----------
+      - name: Publicar relatório do JaCoCo
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jacoco-coverage-report
+          path: backend/target/site/jacoco/
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Publicar relatórios do Surefire (quando falhar)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports
+          path: backend/target/surefire-reports/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # Mostra os percentuais direto no resumo da execução, sem precisar
+      # baixar o artefato para dar uma olhada rápida.
+      - name: Resumo da cobertura
+        if: always()
+        run: |
+          CSV=backend/target/site/jacoco/jacoco.csv
+          if [ ! -f "$CSV" ]; then
+            echo "Relatório do JaCoCo não foi gerado." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          awk -F',' 'NR>1 {
+            im+=$4; ic+=$5; bm+=$6; bc+=$7; lm+=$8; lc+=$9
+          } END {
+            printf "## Cobertura de testes\n\n"
+            printf "| Métrica | Coberto | Total | %% |\n"
+            printf "|---|---:|---:|---:|\n"
+            printf "| Instruções | %d | %d | %.1f%% |\n", ic, ic+im, (ic+im)?100*ic/(ic+im):0
+            printf "| Ramos | %d | %d | %.1f%% |\n", bc, bc+bm, (bc+bm)?100*bc/(bc+bm):0
+            printf "| Linhas | %d | %d | %.1f%% |\n", lc, lc+lm, (lc+lm)?100*lc/(lc+lm):0
+          }' "$CSV" >> $GITHUB_STEP_SUMMARY
