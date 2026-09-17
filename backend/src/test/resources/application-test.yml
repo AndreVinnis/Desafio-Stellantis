@@ -32,3 +32,6 @@ logging:
     com.andre: INFO
     org.hibernate.SQL: WARN
     org.springframework.test: WARN
+
+JWT_SECRET: zdtlD3G/O/9n8u0K1XyBwH2zYjL+mRQ5aV5Z+B4TqP0=
+JWT_EXPIRATION_MS: 1440

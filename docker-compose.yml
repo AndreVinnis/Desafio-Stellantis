@@ -42,6 +42,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: senha
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      JWT_SECRET: zdtlD3G/O/9n8u0K1XyBwH2zYjL+mRQ5aV5Z+B4TqP0=
+      JWT_EXPIRATION_MS: 1440
       TZ: America/Sao_Paulo
     depends_on:
       mysql:
