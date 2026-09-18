@@ -1,4 +1,4 @@
-package com.andre.DesafioStellantis.dto;
+package com.andre.DesafioStellantis.dto.request;
 
 public record AuthRequest(
         String email,
