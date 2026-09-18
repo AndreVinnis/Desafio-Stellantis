@@ -3,12 +3,16 @@ package com.andre.DesafioStellantis.services;
 import com.andre.DesafioStellantis.domain.Dealership;
 import com.andre.DesafioStellantis.dto.request.DealershipRequest;
 import com.andre.DesafioStellantis.dto.response.DealershipResponse;
+import com.andre.DesafioStellantis.exceptions.DearlershipNotFoundExcepition;
 import com.andre.DesafioStellantis.exceptions.InvalidCepException;
 import com.andre.DesafioStellantis.exceptions.InvalidCnpjException;
 import com.andre.DesafioStellantis.repository.DealershipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DealershipService {
@@ -31,6 +35,49 @@ public class DealershipService {
                 .build();
 
         return toResponse(dealershipRepository.save(dealership));
+    }
+
+    @Transactional
+    public List<DealershipResponse> findAll(){
+        List<DealershipResponse> response = new ArrayList<>();
+        List<Dealership> dealerships = dealershipRepository.findAll();
+        for(Dealership dealership: dealerships){
+            response.add(toResponse(dealership));
+        }
+        return response;
+    }
+
+    @Transactional
+    public DealershipResponse findById(Long id){
+        Dealership dealership = dealershipRepository.findById(id).orElseThrow(
+                () -> new DearlershipNotFoundExcepition()
+        );
+        return toResponse(dealership);
+    }
+
+    @Transactional
+    public DealershipResponse update(Long id, DealershipRequest dealershipRequest){
+        Dealership dealership = dealershipRepository.findById(id).orElseThrow(
+                () -> new DearlershipNotFoundExcepition()
+        );
+        dealership.setName(dealershipRequest.name());
+        if(!isValidCnpj(dealershipRequest.cnpj())){
+            throw new InvalidCnpjException(dealershipRequest.cnpj());
+        }
+        dealership.setCnpj(dealershipRequest.cnpj().replaceAll("\\D", ""));
+        if(!isValidCep(dealershipRequest.address().getCep())){
+            throw new InvalidCepException(dealershipRequest.address().getCep());
+        }
+        dealership.setAddress(dealershipRequest.address());
+        return toResponse(dealershipRepository.save(dealership));
+    }
+
+    @Transactional
+    public void delete(Long id){
+        Dealership dealership = dealershipRepository.findById(id).orElseThrow(
+                () -> new DearlershipNotFoundExcepition()
+        );
+        dealershipRepository.delete(dealership);
     }
 
     private DealershipResponse toResponse(Dealership dealership){
