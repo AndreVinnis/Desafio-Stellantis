@@ -39,7 +39,7 @@ public class UserService {
                 .name(userRequest.name())
                 .email(userRequest.email())
                 .hashPassword(encoder.encode(userRequest.password()))
-                .role(UserRole.ADMIN)
+                .role(UserRole.USER)
                 .position(userRequest.position())
                 .build();
 
