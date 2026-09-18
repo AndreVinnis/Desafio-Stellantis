@@ -2,9 +2,9 @@ package com.andre.DesafioStellantis.controllers;
 
 import com.andre.DesafioStellantis.auth.JwtService;
 import com.andre.DesafioStellantis.domain.User;
-import com.andre.DesafioStellantis.dto.AuthRequest;
-import com.andre.DesafioStellantis.dto.AuthResponse;
-import com.andre.DesafioStellantis.dto.UserCreateRequest;
+import com.andre.DesafioStellantis.dto.request.AuthRequest;
+import com.andre.DesafioStellantis.dto.response.AuthResponse;
+import com.andre.DesafioStellantis.dto.request.UserCreateRequest;
 import com.andre.DesafioStellantis.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

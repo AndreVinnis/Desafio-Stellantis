@@ -18,7 +18,7 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 9)
     private String cep;
 
     @Column(nullable = false, length = 150)
