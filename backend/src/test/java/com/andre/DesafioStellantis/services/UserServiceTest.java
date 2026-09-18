@@ -1,7 +1,7 @@
 package com.andre.DesafioStellantis.services;
 
 import com.andre.DesafioStellantis.domain.User;
-import com.andre.DesafioStellantis.dto.UserCreateRequest;
+import com.andre.DesafioStellantis.dto.request.UserCreateRequest;
 import com.andre.DesafioStellantis.enums.UserRole;
 import com.andre.DesafioStellantis.exceptions.InvalidEmailException;
 import com.andre.DesafioStellantis.exceptions.UserAlreadyExistException;
