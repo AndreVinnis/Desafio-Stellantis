@@ -41,7 +41,7 @@ public class Car {
     @CollectionTable(name = "car_fuel_types", joinColumns = @JoinColumn(name = "car_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "fuel_type")
-    private List<FuelType> fuelsType = new ArrayList<>();
+    private List<FuelType> fuelsTypes = new ArrayList<>();
 
     @Column(nullable = false, length = 50)
     private String color;
