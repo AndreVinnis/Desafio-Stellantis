@@ -1,18 +1,31 @@
 import { Link, useParams } from 'react-router'
 import VehicleForm from '../components/VehicleForm'
 import { getErrorMessage, getErrorStatus } from '../api/errors'
-import {
-  useCreateVehicle,
-  useUpdateVehicle,
-  useVehicle,
-} from '../hooks/useVehicles'
+import { useCreateVehicle, useUpdateVehicle, useVehicle } from '../hooks/useVehicles'
 import type { VehicleFormValues } from '../schemas/vehicleSchema'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
-function NotFound() {
+function BackToList({ message }: { message: string }) {
   return (
-    <div role="alert">
-      <p>Veículo não encontrado.</p>
-      <Link to="/vehicles">Voltar para a lista</Link>
+    <Alert variant="destructive" className="max-w-xl">
+      <AlertDescription className="flex flex-wrap items-center gap-3">
+        {message}
+        <Button size="sm" variant="outline" render={<Link to="/vehicles" />} nativeButton={false}>
+          Voltar para a lista
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+}
+
+function FormSkeleton() {
+  return (
+    <div className="grid max-w-2xl gap-4 md:grid-cols-2" aria-busy="true" aria-label="Carregando">
+      {Array.from({ length: 8 }, (_, i) => (
+        <Skeleton key={i} className="h-9 w-full" />
+      ))}
     </div>
   )
 }
@@ -20,14 +33,10 @@ function NotFound() {
 function CreateVehicle() {
   const create = useCreateVehicle()
   return (
-    <>
-      <h1>Novo veículo</h1>
-      <VehicleForm
-        onSubmit={(values) => create.mutate(values)}
-        isPending={create.isPending}
-        error={create.isError ? getErrorMessage(create.error) : null}
-      />
-    </>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-semibold">Novo veículo</h1>
+      <VehicleForm onSubmit={(values) => create.mutate(values)} isPending={create.isPending} />
+    </div>
   )
 }
 
@@ -35,17 +44,9 @@ function EditVehicle({ id }: { id: number }) {
   const { data: vehicle, isLoading, error } = useVehicle(id)
   const update = useUpdateVehicle(id)
 
-  if (isLoading) return <p>Carregando…</p>
-  if (getErrorStatus(error) === 404) return <NotFound />
-
-  if (error || !vehicle) {
-    return (
-      <div role="alert">
-        <p>{getErrorMessage(error)}</p>
-        <Link to="/vehicles">Voltar para a lista</Link>
-      </div>
-    )
-  }
+  if (isLoading) return <FormSkeleton />
+  if (getErrorStatus(error) === 404) return <BackToList message="Veículo não encontrado." />
+  if (error || !vehicle) return <BackToList message={getErrorMessage(error)} />
 
   const defaultValues: Partial<VehicleFormValues> = {
     mark: vehicle.mark,
@@ -60,15 +61,14 @@ function EditVehicle({ id }: { id: number }) {
   }
 
   return (
-    <>
-      <h1>Editar veículo</h1>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-semibold">Editar veículo</h1>
       <VehicleForm
         defaultValues={defaultValues}
         onSubmit={(values) => update.mutate(values)}
         isPending={update.isPending}
-        error={update.isError ? getErrorMessage(update.error) : null}
       />
-    </>
+    </div>
   )
 }
 
@@ -76,6 +76,6 @@ export default function VehicleFormPage() {
   const { id } = useParams()
   if (id === undefined) return <CreateVehicle />
   const numericId = Number(id)
-  if (!Number.isInteger(numericId)) return <NotFound />
+  if (!Number.isInteger(numericId)) return <BackToList message="Veículo não encontrado." />
   return <EditVehicle id={numericId} />
 }

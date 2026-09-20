@@ -1,3 +1,7 @@
+import { Navigate, useParams } from 'react-router'
+
+// Não há tela de detalhe de veículo: a edição cobre todos os campos.
 export default function VehicleDetailPage() {
-  return <h1>Detalhes do veículo</h1>
+  const { id } = useParams()
+  return <Navigate to={`/vehicles/${id}/edit`} replace />
 }

@@ -5,12 +5,29 @@ import { useCreateDealer, useDealer, useUpdateDealer } from '../hooks/useDealers
 import { isAdmin } from '../utils/jwt'
 import { maskCep, maskCnpj } from '../utils/masks'
 import { toDealerInput, type DealerFormValues } from '../schemas/dealerSchema'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
-function NotFound() {
+function BackToList({ message }: { message: string }) {
   return (
-    <div role="alert">
-      <p>Concessionária não encontrada.</p>
-      <Link to="/dealers">Voltar para a lista</Link>
+    <Alert variant="destructive" className="max-w-xl">
+      <AlertDescription className="flex flex-wrap items-center gap-3">
+        {message}
+        <Button size="sm" variant="outline" render={<Link to="/dealers" />} nativeButton={false}>
+          Voltar para a lista
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+}
+
+function FormSkeleton() {
+  return (
+    <div className="grid max-w-2xl gap-4 md:grid-cols-2" aria-busy="true" aria-label="Carregando">
+      {Array.from({ length: 8 }, (_, i) => (
+        <Skeleton key={i} className="h-9 w-full" />
+      ))}
     </div>
   )
 }
@@ -18,14 +35,13 @@ function NotFound() {
 function CreateDealer() {
   const create = useCreateDealer()
   return (
-    <>
-      <h1>Nova concessionária</h1>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-semibold">Nova concessionária</h1>
       <DealerForm
         onSubmit={(values) => create.mutate(toDealerInput(values))}
         isPending={create.isPending}
-        error={create.isError ? getErrorMessage(create.error) : null}
       />
-    </>
+    </div>
   )
 }
 
@@ -33,17 +49,9 @@ function EditDealer({ id }: { id: number }) {
   const { data: dealer, isLoading, error } = useDealer(id)
   const update = useUpdateDealer(id)
 
-  if (isLoading) return <p>Carregando…</p>
-  if (getErrorStatus(error) === 404) return <NotFound />
-
-  if (error || !dealer) {
-    return (
-      <div role="alert">
-        <p>{getErrorMessage(error)}</p>
-        <Link to="/dealers">Voltar para a lista</Link>
-      </div>
-    )
-  }
+  if (isLoading) return <FormSkeleton />
+  if (getErrorStatus(error) === 404) return <BackToList message="Concessionária não encontrada." />
+  if (error || !dealer) return <BackToList message={getErrorMessage(error)} />
 
   const defaultValues: Partial<DealerFormValues> = {
     name: dealer.name,
@@ -59,15 +67,14 @@ function EditDealer({ id }: { id: number }) {
   }
 
   return (
-    <>
-      <h1>Editar concessionária</h1>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-semibold">Editar concessionária</h1>
       <DealerForm
         defaultValues={defaultValues}
         onSubmit={(values) => update.mutate(toDealerInput(values))}
         isPending={update.isPending}
-        error={update.isError ? getErrorMessage(update.error) : null}
       />
-    </>
+    </div>
   )
 }
 
@@ -78,6 +85,6 @@ export default function DealerFormPage() {
   if (!admin) return <Navigate to="/dealers" replace />
   if (id === undefined) return <CreateDealer />
   const numericId = Number(id)
-  if (!Number.isInteger(numericId)) return <NotFound />
+  if (!Number.isInteger(numericId)) return <BackToList message="Concessionária não encontrada." />
   return <EditDealer id={numericId} />
 }
