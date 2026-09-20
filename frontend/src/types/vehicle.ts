@@ -16,6 +16,8 @@ export type Vehicle = {
   year: number | null
   price: number | null
   externalColor: string
+  fuelsTypes: FuelType[]
+  dealershipName: string
 }
 
 export type VehicleInput = {
