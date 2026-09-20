@@ -21,32 +21,32 @@ public class DealershipController {
     private DealershipService dealershipService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DealershipResponse> create(@RequestBody @Valid DealershipRequest dealershipRequest){
         DealershipResponse response = dealershipService.createDealership(dealershipRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<DealershipResponse>> findAll(){
         return ResponseEntity.ok(dealershipService.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<DealershipResponse> findById(@PathVariable Long id){
         return ResponseEntity.ok(dealershipService.findById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DealershipResponse> update(@PathVariable Long id, @RequestBody @Valid DealershipRequest dealershipRequest){
         return ResponseEntity.ok(dealershipService.update(id, dealershipRequest));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         dealershipService.delete(id);
         return ResponseEntity.ok().build();

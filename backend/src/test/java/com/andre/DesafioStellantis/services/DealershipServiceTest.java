@@ -4,7 +4,7 @@ import com.andre.DesafioStellantis.domain.Address;
 import com.andre.DesafioStellantis.domain.Dealership;
 import com.andre.DesafioStellantis.dto.request.DealershipRequest;
 import com.andre.DesafioStellantis.dto.response.DealershipResponse;
-import com.andre.DesafioStellantis.exceptions.DearlershipNotFoundExcepition;
+import com.andre.DesafioStellantis.exceptions.DealershipNotFoundException;
 import com.andre.DesafioStellantis.exceptions.InvalidCepException;
 import com.andre.DesafioStellantis.exceptions.InvalidCnpjException;
 import com.andre.DesafioStellantis.repository.DealershipRepository;
@@ -200,7 +200,7 @@ class DealershipServiceTest {
 
         // Act & Assert
         assertThrows(
-                DearlershipNotFoundExcepition.class,
+                DealershipNotFoundException.class,
                 () -> dealershipService.findById(VALID_ID)
         );
         verify(dealershipRepository, times(1)).findById(VALID_ID);
@@ -234,7 +234,7 @@ class DealershipServiceTest {
 
         // Act & Assert
         assertThrows(
-                DearlershipNotFoundExcepition.class,
+                DealershipNotFoundException.class,
                 () -> dealershipService.update(VALID_ID, validRequest)
         );
         verify(dealershipRepository, never()).save(any(Dealership.class));
@@ -316,7 +316,7 @@ class DealershipServiceTest {
 
         // Act & Assert
         assertThrows(
-                DearlershipNotFoundExcepition.class,
+                DealershipNotFoundException.class,
                 () -> dealershipService.delete(VALID_ID)
         );
         verify(dealershipRepository, never()).delete(any(Dealership.class));

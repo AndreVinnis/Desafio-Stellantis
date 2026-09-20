@@ -171,7 +171,7 @@ class CarServiceTest {
 
         // Act & Assert
         assertThrows(
-                DearlershipNotFoundExcepition.class,
+                DealershipNotFoundException.class,
                 () -> carService.createCar(validRequest)
         );
         verify(dealershipRepository, times(1)).findById(VALID_DEALERSHIP_ID);
@@ -302,7 +302,7 @@ class CarServiceTest {
 
         // Act & Assert
         assertThrows(
-                DearlershipNotFoundExcepition.class,
+                DealershipNotFoundException.class,
                 () -> carService.update(VALID_CAR_ID, validRequest)
         );
         verify(carRepository, never()).save(any(Car.class));
