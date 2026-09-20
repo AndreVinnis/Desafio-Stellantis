@@ -1,6 +1,8 @@
 package com.andre.DesafioStellantis.dto.response;
 
+import com.andre.DesafioStellantis.enums.FuelType;
 import java.math.BigDecimal;
+import java.util.List;
 
 public record CarResponse(
         Long id,
@@ -8,6 +10,8 @@ public record CarResponse(
         String model,
         Integer year,
         BigDecimal price,
-        String externalColor
+        String externalColor,
+        List<FuelType> fuelsTypes,
+        String dealershipName
 ) {
 }
