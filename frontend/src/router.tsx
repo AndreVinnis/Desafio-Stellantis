@@ -9,12 +9,14 @@ import DealersListPage from './pages/DealersListPage'
 import DealerFormPage from './pages/DealerFormPage'
 import DealerDetailPage from './pages/DealerDetailPage'
 import DealerVehiclesPage from './pages/DealerVehiclesPage'
+import RouteError from './components/RouteError'
 import NotFoundPage from './pages/NotFoundPage'
 
 export const router = createBrowserRouter([
-  { path: '/login', element: <LoginPage /> },
+  { path: '/login', element: <LoginPage />, errorElement: <RouteError /> },
   {
     element: <ProtectedRoute />,
+    errorElement: <RouteError />,
     children: [
       {
         element: <Layout />,

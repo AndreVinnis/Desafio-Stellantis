@@ -2,25 +2,29 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from 'react-router'
+import { Loader2Icon } from 'lucide-react'
 import { dealerSchema, type DealerFormValues } from '../schemas/dealerSchema'
 import { fetchCep } from '../api/viacep'
 import { maskCep, maskCnpj, onlyDigits } from '../utils/masks'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 type Props = {
   defaultValues?: Partial<DealerFormValues>
   onSubmit: (values: DealerFormValues) => void
   isPending: boolean
-  error?: string | null
 }
 
 type AddressField = 'street' | 'neighborhood' | 'city' | 'stateName'
 
 type CepStatus = 'idle' | 'loading' | 'notFound' | 'error'
 
-const fieldStyle = { display: 'flex', flexDirection: 'column', gap: 4 } as const
-const errorStyle = { color: 'crimson', fontSize: 13 } as const
+function FieldError({ message }: { message?: string }) {
+  return message ? <p className="text-sm text-destructive">{message}</p> : null
+}
 
-export default function DealerForm({ defaultValues, onSubmit, isPending, error }: Props) {
+export default function DealerForm({ defaultValues, onSubmit, isPending }: Props) {
   const {
     register,
     handleSubmit,
@@ -76,89 +80,96 @@ export default function DealerForm({ defaultValues, onSubmit, isPending, error }
   }, [cepDigits, setValue, getValues])
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-      style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 420 }}
-    >
-      <label style={fieldStyle}>
-        Nome
-        <input {...register('name')} />
-        <span style={errorStyle}>{errors.name?.message}</span>
-      </label>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid max-w-2xl gap-4 md:grid-cols-2">
+      <div className="grid gap-2">
+        <Label htmlFor="name">Nome</Label>
+        <Input id="name" aria-invalid={!!errors.name} {...register('name')} />
+        <FieldError message={errors.name?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        CNPJ
-        <input
+      <div className="grid gap-2">
+        <Label htmlFor="cnpj">CNPJ</Label>
+        <Input
+          id="cnpj"
           inputMode="numeric"
           placeholder="00.000.000/0000-00"
+          aria-invalid={!!errors.cnpj}
           {...register('cnpj', {
             onChange: (e) => setValue('cnpj', maskCnpj(e.target.value)),
           })}
         />
-        <span style={errorStyle}>{errors.cnpj?.message}</span>
-      </label>
+        <FieldError message={errors.cnpj?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        CEP
-        <input
+      <div className="grid gap-2">
+        <Label htmlFor="cep">CEP</Label>
+        <Input
+          id="cep"
           inputMode="numeric"
           placeholder="00000-000"
+          aria-invalid={!!errors.address?.cep}
           {...register('address.cep', {
             onChange: (e) => setValue('address.cep', maskCep(e.target.value)),
           })}
         />
-        {cepStatus === 'loading' && <span>Buscando CEP…</span>}
-        {cepStatus === 'notFound' && <span style={errorStyle}>CEP não encontrado</span>}
-        {cepStatus === 'error' && (
-          <span style={errorStyle}>Não foi possível buscar o CEP. Preencha manualmente.</span>
+        {cepStatus === 'loading' && (
+          <p className="flex items-center gap-1 text-sm text-muted-foreground">
+            <Loader2Icon className="size-3.5 animate-spin" /> Buscando CEP…
+          </p>
         )}
-        <span style={errorStyle}>{errors.address?.cep?.message}</span>
-      </label>
+        {cepStatus === 'notFound' && <FieldError message="CEP não encontrado." />}
+        {cepStatus === 'error' && (
+          <FieldError message="Não foi possível buscar o CEP. Preencha manualmente." />
+        )}
+        <FieldError message={errors.address?.cep?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        Logradouro
-        <input {...register('address.street')} />
-        <span style={errorStyle}>{errors.address?.street?.message}</span>
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor="street">Logradouro</Label>
+        <Input id="street" aria-invalid={!!errors.address?.street} {...register('address.street')} />
+        <FieldError message={errors.address?.street?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        Complemento (opcional)
-        <input {...register('address.complement')} />
-        <span style={errorStyle}>{errors.address?.complement?.message}</span>
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor="complement">Complemento (opcional)</Label>
+        <Input id="complement" {...register('address.complement')} />
+        <FieldError message={errors.address?.complement?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        Bairro
-        <input {...register('address.neighborhood')} />
-        <span style={errorStyle}>{errors.address?.neighborhood?.message}</span>
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor="neighborhood">Bairro</Label>
+        <Input
+          id="neighborhood"
+          aria-invalid={!!errors.address?.neighborhood}
+          {...register('address.neighborhood')}
+        />
+        <FieldError message={errors.address?.neighborhood?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        Cidade
-        <input {...register('address.city')} />
-        <span style={errorStyle}>{errors.address?.city?.message}</span>
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor="city">Cidade</Label>
+        <Input id="city" aria-invalid={!!errors.address?.city} {...register('address.city')} />
+        <FieldError message={errors.address?.city?.message} />
+      </div>
 
-      <label style={fieldStyle}>
-        Estado
-        <input {...register('address.stateName')} />
-        <span style={errorStyle}>{errors.address?.stateName?.message}</span>
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor="stateName">Estado</Label>
+        <Input
+          id="stateName"
+          aria-invalid={!!errors.address?.stateName}
+          {...register('address.stateName')}
+        />
+        <FieldError message={errors.address?.stateName?.message} />
+      </div>
 
-      {error && (
-        <p role="alert" style={errorStyle}>
-          {error}
-        </p>
-      )}
-
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button type="submit" disabled={isPending}>
+      <div className="flex gap-2 md:col-span-2">
+        <Button type="submit" disabled={isPending}>
+          {isPending && <Loader2Icon className="animate-spin" />}
           {isPending ? 'Salvando…' : 'Salvar'}
-        </button>
-        <Link to="/dealers">
-          <button type="button">Cancelar</button>
-        </Link>
+        </Button>
+        <Button variant="outline" render={<Link to="/dealers" />} nativeButton={false}>
+          Cancelar
+        </Button>
       </div>
     </form>
   )

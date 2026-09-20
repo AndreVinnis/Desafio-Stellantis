@@ -2,6 +2,25 @@ import { Link, useParams } from 'react-router'
 import { useDealer } from '../hooks/useDealers'
 import { getErrorMessage, getErrorStatus } from '../api/errors'
 import { fuelLabels } from '../types/vehicle'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import TableSkeleton from '@/components/TableSkeleton'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
+const columns = ['Marca', 'Modelo', 'Ano', 'Cor', 'Combustível', 'Ações']
+
+function BackToList({ message }: { message: string }) {
+  return (
+    <Alert variant="destructive" className="max-w-xl">
+      <AlertDescription className="flex flex-wrap items-center gap-3">
+        {message}
+        <Button size="sm" variant="outline" render={<Link to="/dealers" />} nativeButton={false}>
+          Voltar para a lista
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+}
 
 export default function DealerVehiclesPage() {
   const { id } = useParams()
@@ -10,68 +29,62 @@ export default function DealerVehiclesPage() {
   const { data: dealer, isLoading, error } = useDealer(numericId)
 
   if (!validId || getErrorStatus(error) === 404) {
-    return (
-      <div role="alert">
-        <p>Concessionária não encontrada.</p>
-        <Link to="/dealers">Voltar para a lista</Link>
-      </div>
-    )
+    return <BackToList message="Concessionária não encontrada." />
   }
-  if (isLoading) return <p>Carregando…</p>
-  if (error || !dealer) {
-    return (
-      <div role="alert">
-        <p>{getErrorMessage(error)}</p>
-        <Link to="/dealers">Voltar para a lista</Link>
-      </div>
-    )
-  }
+  if (isLoading) return <TableSkeleton columns={columns} />
+  if (error || !dealer) return <BackToList message={getErrorMessage(error)} />
 
   return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <h1>Veículos de {dealer.name}</h1>
-        <Link to="/vehicles/new" style={{ marginLeft: 'auto' }}>
-          <button>Novo veículo</button>
-        </Link>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-semibold">Veículos de {dealer.name}</h1>
+        <Button render={<Link to="/vehicles/new" />} nativeButton={false}>
+          Novo veículo
+        </Button>
       </div>
 
       {dealer.cars.length === 0 ? (
-        <p>Nenhum veículo cadastrado nesta concessionária</p>
+        <div className="rounded-md border border-dashed p-8 text-center text-muted-foreground">
+          Nenhum veículo cadastrado nesta concessionária.
+        </div>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Marca</th>
-              <th>Modelo</th>
-              <th>Ano</th>
-              <th>Cor</th>
-              <th>Combustível</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dealer.cars.map((c) => (
-              <tr key={c.id}>
-                <td>{c.mark}</td>
-                <td>{c.model}</td>
-                <td>{c.year ?? '-'}</td>
-                <td>{c.externalColor}</td>
-                <td>{c.fuelsTypes.map((f) => fuelLabels[f]).join(', ')}</td>
-                <td>
-                  <Link to={`/vehicles/${c.id}/edit`}>
-                    <button>Editar</button>
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((c) => (
+                  <TableHead key={c}>{c}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {dealer.cars.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell>{c.mark}</TableCell>
+                  <TableCell>{c.model}</TableCell>
+                  <TableCell>{c.year ?? '-'}</TableCell>
+                  <TableCell>{c.externalColor}</TableCell>
+                  <TableCell>{c.fuelsTypes.map((f) => fuelLabels[f]).join(', ')}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      render={<Link to={`/vehicles/${c.id}/edit`} />}
+                      nativeButton={false}
+                    >
+                      Editar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
-      <p>
-        <Link to="/dealers">Voltar para a lista</Link>
-      </p>
-    </>
+      <Button variant="outline" render={<Link to="/dealers" />} nativeButton={false}>
+        Voltar para a lista
+      </Button>
+    </div>
   )
 }
