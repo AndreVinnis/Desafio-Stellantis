@@ -69,6 +69,9 @@ export default function DealersListPage() {
                   <Link to={`/dealers/${d.id}`}>
                     <button>Detalhes</button>
                   </Link>
+                  <Link to={`/dealers/${d.id}/vehicles`}>
+                    <button>Ver veículos ({d.cars.length})</button>
+                  </Link>
                   {admin && (
                     <>
                       <Link to={`/dealers/${d.id}/edit`}>
