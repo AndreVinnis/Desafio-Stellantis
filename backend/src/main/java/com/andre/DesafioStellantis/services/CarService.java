@@ -117,7 +117,9 @@ public class CarService {
               car.getModel(),
               car.getYear(),
               car.getPrice(),
-              car.getExternalColor()
+              car.getExternalColor(),
+              new ArrayList<>(car.getFuelsTypes()),
+              car.getDealership().getName()
         );
     }
 }
