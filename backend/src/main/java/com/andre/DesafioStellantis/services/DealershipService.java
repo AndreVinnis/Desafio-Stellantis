@@ -1,7 +1,9 @@
 package com.andre.DesafioStellantis.services;
 
+import com.andre.DesafioStellantis.domain.Car;
 import com.andre.DesafioStellantis.domain.Dealership;
 import com.andre.DesafioStellantis.dto.request.DealershipRequest;
+import com.andre.DesafioStellantis.dto.response.CarResponse;
 import com.andre.DesafioStellantis.dto.response.DealershipResponse;
 import com.andre.DesafioStellantis.exceptions.DealershipNotFoundException;
 import com.andre.DesafioStellantis.exceptions.InvalidCepException;
@@ -81,12 +83,28 @@ public class DealershipService {
     }
 
     private DealershipResponse toResponse(Dealership dealership){
+        List<CarResponse> carResponses = new ArrayList<>();
+        for(Car car: dealership.getCars()){
+            carResponses.add(new CarResponse(
+                    car.getId(),
+                    car.getMark(),
+                    car.getModel(),
+                    car.getChassis(),
+                    car.getYear(),
+                    car.getPrice(),
+                    car.getColor(),
+                    car.getExternalColor(),
+                    new ArrayList<>(car.getFuelsTypes()),
+                    car.getDealership().getId(),
+                    car.getDealership().getName()
+            ));
+        }
         return new DealershipResponse(
                 dealership.getId(),
                 dealership.getName(),
                 dealership.getCnpj(),
                 dealership.getAddress(),
-                null
+                carResponses
         );
     }
 

@@ -20,32 +20,32 @@ public class CarController {
     private CarService carService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CarResponse> create(@RequestBody @Valid CarCreateRequest carRequest){
         CarResponse response = carService.createCar(carRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<CarResponse>> findAll(){
         return ResponseEntity.ok(carService.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CarResponse> findById(@PathVariable Long id){
         return ResponseEntity.ok(carService.findById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CarResponse> update(@PathVariable Long id, @RequestBody @Valid CarCreateRequest carRequest){
         return ResponseEntity.ok(carService.update(id, carRequest));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole(USER)")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         carService.delete(id);
         return ResponseEntity.ok().build();
