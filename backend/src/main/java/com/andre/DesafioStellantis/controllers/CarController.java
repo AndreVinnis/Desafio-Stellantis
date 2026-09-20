@@ -19,7 +19,7 @@ public class CarController {
     @Autowired
     private CarService carService;
 
-    @PostMapping("/create")
+    @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CarResponse> create(@RequestBody @Valid CarCreateRequest carRequest){
         CarResponse response = carService.createCar(carRequest);

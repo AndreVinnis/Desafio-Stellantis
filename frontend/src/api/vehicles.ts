@@ -14,9 +14,8 @@ export const vehiclesApi = {
     return data
   },
 
-  // O backend expõe o POST em /vehicles/create
   create: async (input: VehicleInput) => {
-    const { data } = await api.post<Vehicle>(`${BASE}/create`, input)
+    const { data } = await api.post<Vehicle>(BASE, input)
     return data
   },
 
