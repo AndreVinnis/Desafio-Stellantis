@@ -3,9 +3,7 @@ package com.andre.DesafioStellantis.services;
 import com.andre.DesafioStellantis.domain.Car;
 import com.andre.DesafioStellantis.domain.Dealership;
 import com.andre.DesafioStellantis.dto.request.CarCreateRequest;
-import com.andre.DesafioStellantis.dto.request.DealershipRequest;
 import com.andre.DesafioStellantis.dto.response.CarResponse;
-import com.andre.DesafioStellantis.dto.response.DealershipResponse;
 import com.andre.DesafioStellantis.exceptions.*;
 import com.andre.DesafioStellantis.repository.CarRepository;
 import com.andre.DesafioStellantis.repository.DealershipRepository;
@@ -38,7 +36,7 @@ public class CarService {
             throw new InvalidFuelTypesException();
         }
         Dealership dealership = dealershipRepository.findById(carRequest.dealershipId()).orElseThrow(
-                () -> new DearlershipNotFoundExcepition()
+                () -> new DealershipNotFoundException()
         );
 
         Car car = Car.builder()
@@ -89,7 +87,7 @@ public class CarService {
             throw new InvalidFuelTypesException();
         }
         Dealership dealership = dealershipRepository.findById(carRequest.dealershipId()).orElseThrow(
-                () -> new DearlershipNotFoundExcepition()
+                () -> new DealershipNotFoundException()
         );
 
         car.setMark(carRequest.mark());
@@ -112,10 +110,9 @@ public class CarService {
         carRepository.delete(car);
     }
 
-
-
     private CarResponse toResponse(Car car){
         return new CarResponse(
+              car.getId(),
               car.getMark(),
               car.getModel(),
               car.getYear(),

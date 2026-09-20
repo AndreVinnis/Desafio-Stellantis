@@ -3,7 +3,7 @@ package com.andre.DesafioStellantis.services;
 import com.andre.DesafioStellantis.domain.Dealership;
 import com.andre.DesafioStellantis.dto.request.DealershipRequest;
 import com.andre.DesafioStellantis.dto.response.DealershipResponse;
-import com.andre.DesafioStellantis.exceptions.DearlershipNotFoundExcepition;
+import com.andre.DesafioStellantis.exceptions.DealershipNotFoundException;
 import com.andre.DesafioStellantis.exceptions.InvalidCepException;
 import com.andre.DesafioStellantis.exceptions.InvalidCnpjException;
 import com.andre.DesafioStellantis.repository.DealershipRepository;
@@ -50,7 +50,7 @@ public class DealershipService {
     @Transactional
     public DealershipResponse findById(Long id){
         Dealership dealership = dealershipRepository.findById(id).orElseThrow(
-                () -> new DearlershipNotFoundExcepition()
+                () -> new DealershipNotFoundException()
         );
         return toResponse(dealership);
     }
@@ -58,7 +58,7 @@ public class DealershipService {
     @Transactional
     public DealershipResponse update(Long id, DealershipRequest dealershipRequest){
         Dealership dealership = dealershipRepository.findById(id).orElseThrow(
-                () -> new DearlershipNotFoundExcepition()
+                () -> new DealershipNotFoundException()
         );
         dealership.setName(dealershipRequest.name());
         if(!isValidCnpj(dealershipRequest.cnpj())){
@@ -75,13 +75,14 @@ public class DealershipService {
     @Transactional
     public void delete(Long id){
         Dealership dealership = dealershipRepository.findById(id).orElseThrow(
-                () -> new DearlershipNotFoundExcepition()
+                () -> new DealershipNotFoundException()
         );
         dealershipRepository.delete(dealership);
     }
 
     private DealershipResponse toResponse(Dealership dealership){
         return new DealershipResponse(
+                dealership.getId(),
                 dealership.getName(),
                 dealership.getCnpj(),
                 dealership.getAddress(),
