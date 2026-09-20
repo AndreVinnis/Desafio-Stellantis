@@ -20,6 +20,8 @@ export const useCreateVehicle = () => {
     mutationFn: (input: VehicleInput) => vehiclesApi.create(input),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      // a contagem/lista de veículos da concessionária vem de ['dealers']
+      await queryClient.invalidateQueries({ queryKey: ['dealers'] })
       navigate('/vehicles')
     },
   })
@@ -32,6 +34,8 @@ export const useUpdateVehicle = (id: number) => {
     mutationFn: (input: VehicleInput) => vehiclesApi.update(id, input),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      // a contagem/lista de veículos da concessionária vem de ['dealers']
+      await queryClient.invalidateQueries({ queryKey: ['dealers'] })
       navigate('/vehicles')
     },
   })
@@ -41,6 +45,9 @@ export const useDeleteVehicle = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: number) => vehiclesApi.remove(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vehicles'] }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      await queryClient.invalidateQueries({ queryKey: ['dealers'] })
+    },
   })
 }

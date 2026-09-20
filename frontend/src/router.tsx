@@ -8,6 +8,7 @@ import VehicleDetailPage from './pages/VehicleDetailPage'
 import DealersListPage from './pages/DealersListPage'
 import DealerFormPage from './pages/DealerFormPage'
 import DealerDetailPage from './pages/DealerDetailPage'
+import DealerVehiclesPage from './pages/DealerVehiclesPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export const router = createBrowserRouter([
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
           { path: '/dealers/new', element: <DealerFormPage /> },
           { path: '/dealers/:id', element: <DealerDetailPage /> },
           { path: '/dealers/:id/edit', element: <DealerFormPage /> },
+          { path: '/dealers/:id/vehicles', element: <DealerVehiclesPage /> },
         ],
       },
     ],
