@@ -1,18 +1,15 @@
 import { Link } from 'react-router'
-import { useVehicles } from '../hooks/useVehicles'
-import type { FuelType } from '../types/vehicle'
-
-const fuelLabels: Record<FuelType, string> = {
-  GASOLINE: 'Gasolina',
-  ETHANOL: 'Etanol',
-  DIESEL: 'Diesel',
-  FLEX: 'Flex',
-  ELECTRICITY: 'Elétrico',
-  HYBRID: 'Híbrido',
-}
+import { useDeleteVehicle, useVehicles } from '../hooks/useVehicles'
+import { getErrorMessage } from '../api/errors'
+import { fuelLabels } from '../types/vehicle'
 
 export default function VehiclesListPage() {
   const { data: vehicles, isLoading, isError, refetch } = useVehicles()
+  const remove = useDeleteVehicle()
+
+  const handleDelete = (id: number, label: string) => {
+    if (window.confirm(`Excluir o veículo ${label}?`)) remove.mutate(id)
+  }
 
   return (
     <>
@@ -22,6 +19,12 @@ export default function VehiclesListPage() {
           <button>Novo veículo</button>
         </Link>
       </div>
+
+      {remove.isError && (
+        <p role="alert" style={{ color: 'crimson' }}>
+          {getErrorMessage(remove.error)}
+        </p>
+      )}
 
       {isLoading && <p>Carregando…</p>}
 
@@ -44,6 +47,7 @@ export default function VehiclesListPage() {
               <th>Cor</th>
               <th>Combustível</th>
               <th>Concessionária</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -55,6 +59,17 @@ export default function VehiclesListPage() {
                 <td>{v.externalColor}</td>
                 <td>{v.fuelsTypes.map((f) => fuelLabels[f]).join(', ')}</td>
                 <td>{v.dealershipName}</td>
+                <td style={{ display: 'flex', gap: 8 }}>
+                  <Link to={`/vehicles/${v.id}/edit`}>
+                    <button>Editar</button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(v.id, `${v.mark} ${v.model}`)}
+                    disabled={remove.isPending}
+                  >
+                    Excluir
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

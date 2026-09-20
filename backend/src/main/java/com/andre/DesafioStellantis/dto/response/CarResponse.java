@@ -8,10 +8,13 @@ public record CarResponse(
         Long id,
         String mark,
         String model,
+        String chassis,
         Integer year,
         BigDecimal price,
+        String color,
         String externalColor,
         List<FuelType> fuelsTypes,
+        Long dealershipId,
         String dealershipName
 ) {
 }
