@@ -37,3 +37,15 @@ build/
 .env.local
 .env.*.local
 !.env.example
+
+### Frontend (Node / Vite) ###
+node_modules/
+frontend/dist/
+frontend/coverage/
+.vite/
+*.tsbuildinfo
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
