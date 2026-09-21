@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useDeleteVehicle, useVehicles } from '../hooks/useVehicles'
+import { formatPrice } from '../lib/format'
 import { fuelLabels } from '../types/vehicle'
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog'
 import TableSkeleton from '@/components/TableSkeleton'
@@ -8,7 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-const columns = ['Marca', 'Modelo', 'Ano', 'Cor', 'Combustível', 'Concessionária', 'Ações']
+const columns = ['Marca', 'Modelo', 'Ano', 'Cor', 'Combustível', 'Preço', 'Concessionária', 'Ações']
 
 export default function VehiclesListPage() {
   const { data: vehicles, isLoading, isError, refetch } = useVehicles()
@@ -69,6 +70,7 @@ export default function VehiclesListPage() {
                   <TableCell>{v.year ?? '-'}</TableCell>
                   <TableCell>{v.externalColor}</TableCell>
                   <TableCell>{v.fuelsTypes.map((f) => fuelLabels[f]).join(', ')}</TableCell>
+                  <TableCell>{formatPrice(v.price)}</TableCell>
                   <TableCell>{v.dealershipName}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
