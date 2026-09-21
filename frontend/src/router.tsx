@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 import VehiclesListPage from './pages/VehiclesListPage'
 import VehicleFormPage from './pages/VehicleFormPage'
 import VehicleDetailPage from './pages/VehicleDetailPage'
@@ -14,6 +15,7 @@ import NotFoundPage from './pages/NotFoundPage'
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage />, errorElement: <RouteError /> },
+  { path: '/register', element: <RegisterPage />, errorElement: <RouteError /> },
   {
     element: <ProtectedRoute />,
     errorElement: <RouteError />,

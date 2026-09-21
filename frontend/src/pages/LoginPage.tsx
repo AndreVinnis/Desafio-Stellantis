@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 import { login } from '../api/auth'
@@ -62,6 +62,12 @@ export default function LoginPage() {
               {loading && <Loader2Icon className="animate-spin" />}
               {loading ? 'Entrando…' : 'Entrar'}
             </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              Não tem conta?{' '}
+              <Link to="/register" className="underline underline-offset-4">
+                Criar conta
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>
