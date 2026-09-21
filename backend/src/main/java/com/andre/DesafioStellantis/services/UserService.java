@@ -2,15 +2,16 @@ package com.andre.DesafioStellantis.services;
 
 import com.andre.DesafioStellantis.domain.User;
 import com.andre.DesafioStellantis.dto.request.UserCreateRequest;
+import com.andre.DesafioStellantis.dto.response.UserResponse;
 import com.andre.DesafioStellantis.enums.UserRole;
 import com.andre.DesafioStellantis.exceptions.InvalidEmailException;
+import com.andre.DesafioStellantis.exceptions.UserNotFoundException;
 import com.andre.DesafioStellantis.exceptions.UserAlreadyExistException;
 import com.andre.DesafioStellantis.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.regex.Pattern;
 
 @Service
@@ -46,6 +47,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public UserResponse promoteToAdmin(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        user.setRole(UserRole.ADMIN);
+        User saved = userRepository.save(user);
+        return new UserResponse(saved.getId(), saved.getName(), saved.getEmail(), saved.getPosition(), saved.getRole());
+    }
 
     private boolean isValidEmail(String email) {
         if (email == null || email.isBlank()) {

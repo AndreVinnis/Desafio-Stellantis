@@ -20,7 +20,7 @@ public class DealershipController {
     @Autowired
     private DealershipService dealershipService;
 
-    @PostMapping("/create")
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DealershipResponse> create(@RequestBody @Valid DealershipRequest dealershipRequest){
         DealershipResponse response = dealershipService.createDealership(dealershipRequest);

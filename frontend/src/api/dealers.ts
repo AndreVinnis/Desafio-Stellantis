@@ -15,7 +15,7 @@ export const dealersApi = {
   },
 
   create: async (input: DealerInput) => {
-    const { data } = await api.post<Dealer>(`${BASE}/create`, input)
+    const { data } = await api.post<Dealer>(BASE, input)
     return data
   },
 

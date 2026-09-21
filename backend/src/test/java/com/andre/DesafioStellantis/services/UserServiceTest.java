@@ -4,7 +4,9 @@ import com.andre.DesafioStellantis.domain.User;
 import com.andre.DesafioStellantis.dto.request.UserCreateRequest;
 import com.andre.DesafioStellantis.enums.UserRole;
 import com.andre.DesafioStellantis.exceptions.InvalidEmailException;
+import com.andre.DesafioStellantis.dto.response.UserResponse;
 import com.andre.DesafioStellantis.exceptions.UserAlreadyExistException;
+import com.andre.DesafioStellantis.exceptions.UserNotFoundException;
 import com.andre.DesafioStellantis.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -126,6 +130,30 @@ class UserServiceTest {
         //Act & Assert
         Exception exception = assertThrows(UserAlreadyExistException.class, () -> userService.createUser(userCreateRequest));
         assertEquals("Já existe um usuário com esse email: " + userCreateRequest.email(), exception.getMessage());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Deve promover um usuário comum para ADMIN")
+    void promoteToAdmin_ShouldSetRoleAdmin_WhenUserExists(){
+        User user = User.builder().id(1L).name("Vinicius").email("viniandre@gmail.com")
+                .position("Developer").role(UserRole.USER).build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        UserResponse response = userService.promoteToAdmin(1L);
+
+        assertEquals(UserRole.ADMIN, response.role());
+        assertEquals(UserRole.ADMIN, user.getRole());
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao promover um usuário inexistente")
+    void promoteToAdmin_ShouldThrowUserNotFoundException_WhenUserDoesNotExist(){
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.promoteToAdmin(99L));
         verify(userRepository, never()).save(any(User.class));
     }
 }
